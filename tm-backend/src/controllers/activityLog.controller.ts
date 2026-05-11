@@ -13,8 +13,7 @@ export const getActivityLogsController = async (
     const limit = Number(req.query.limit) || 20;
     const skip = (page - 1) * limit;
 
-    const filter =
-      req.user.role === "admin" ? {} : { userId: req.user.userId };
+    const filter = req.user.role === "admin" ? {} : { userId: req.user.userId };
 
     const [logs, total] = await Promise.all([
       ActivityLog.find(filter)

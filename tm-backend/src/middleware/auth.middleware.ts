@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 
 import jwt from "jsonwebtoken";
 
+// Extend the Request interface to include the `user` property.
 export interface AuthRequest extends Request {
   user?: any;
 }

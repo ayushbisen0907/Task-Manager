@@ -1,6 +1,7 @@
 import { TaskPriority, TaskStatus } from "@prisma/client";
 import prisma from "../config/prisma";
 
+// Interface for the data required to create a new task.
 interface CreateTaskData {
   title: string;
   description?: string;
@@ -24,7 +25,7 @@ export const getTasks = async (
   userId: string,
   role: string,
   page: number,
-  limit: number
+  limit: number,
 ) => {
   const skip = (page - 1) * limit;
 
@@ -59,10 +60,9 @@ export const getTasks = async (
     take: limit,
   });
 
-  const totalTasks =
-    await prisma.task.count({
-      where: whereCondition,
-    });
+  const totalTasks = await prisma.task.count({
+    where: whereCondition,
+  });
 
   return {
     tasks,
@@ -70,9 +70,7 @@ export const getTasks = async (
       total: totalTasks,
       page,
       limit,
-      totalPages: Math.ceil(
-        totalTasks / limit
-      ),
+      totalPages: Math.ceil(totalTasks / limit),
     },
   };
 };

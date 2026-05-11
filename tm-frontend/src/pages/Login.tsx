@@ -7,7 +7,6 @@ import {
   Alert,
   Box,
   Button,
-  Container,
   Link,
   Paper,
   Stack,
@@ -59,14 +58,52 @@ const LoginPage = () => {
   };
 
   return (
-    <Container maxWidth="xs" sx={{ pt: 8 }}>
-      <Paper elevation={3} sx={{ p: 4 }}>
-        <Typography variant="h5" sx={{ mb: 1, fontWeight: 600 }}>
-          Sign in
-        </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-          Welcome back. Enter your credentials to continue.
-        </Typography>
+    <Box
+      sx={{
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        p: 2,
+        background:
+          "radial-gradient(at 80% 0%, rgba(99,102,241,0.12) 0%, transparent 50%), radial-gradient(at 0% 100%, rgba(236,72,153,0.10) 0%, transparent 50%)",
+      }}
+    >
+      <Paper
+        elevation={3}
+        sx={{
+          p: { xs: 3, sm: 5 },
+          width: "100%",
+          maxWidth: 420,
+          borderRadius: 4,
+        }}
+      >
+        <Stack alignItems="center" sx={{ mb: 3 }}>
+          <Box
+            sx={{
+              width: 48,
+              height: 48,
+              borderRadius: 3,
+              background: "linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: "#fff",
+              fontWeight: 700,
+              fontSize: 22,
+              boxShadow: "0 8px 20px rgba(99,102,241,0.35)",
+              mb: 2,
+            }}
+          >
+            T
+          </Box>
+          <Typography variant="h5" sx={{ fontWeight: 700 }}>
+            Welcome back
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+            Sign in to continue to Task Manager
+          </Typography>
+        </Stack>
 
         {error && (
           <Alert severity="error" sx={{ mb: 2 }}>
@@ -75,7 +112,7 @@ const LoginPage = () => {
         )}
 
         <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate>
-          <Stack spacing={2}>
+          <Stack spacing={2.5}>
             <TextField
               label="Email"
               type="email"
@@ -99,19 +136,20 @@ const LoginPage = () => {
               variant="contained"
               size="large"
               disabled={status === "loading"}
+              sx={{ mt: 1 }}
             >
               {status === "loading" ? "Signing in…" : "Sign in"}
             </Button>
-            <Typography variant="body2" textAlign="center">
+            <Typography variant="body2" textAlign="center" color="text.secondary">
               Don't have an account?{" "}
               <Link component={RouterLink} to="/register">
-                Register
+                Create one
               </Link>
             </Typography>
           </Stack>
         </Box>
       </Paper>
-    </Container>
+    </Box>
   );
 };
 

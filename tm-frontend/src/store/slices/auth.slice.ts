@@ -21,10 +21,21 @@ export type AuthStatus = "idle" | "loading" | "succeeded" | "failed";
 
 interface AuthState {
   token: string | null;
-  user: AuthUser | User | null;
+  user: AuthUser | null;
   status: AuthStatus;
   error: string | null;
 }
+
+const toAuthUser = (u: User | AuthUser): AuthUser => {
+  if (typeof (u as AuthUser).role === "string") return u as AuthUser;
+  const su = u as User;
+  return {
+    id: su.id,
+    name: su.name,
+    email: su.email,
+    role: su.role?.name ?? "user",
+  };
+};
 
 const initialState: AuthState = {
   token: null,
@@ -98,7 +109,7 @@ const authSlice = createSlice({
       .addCase(login.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.token = action.payload.token;
-        state.user = action.payload.user;
+        state.user = toAuthUser(action.payload.user);
       })
       .addCase(login.rejected, (state, action: PayloadAction<unknown>) => {
         state.status = "failed";
@@ -116,7 +127,7 @@ const authSlice = createSlice({
         state.error = (action.payload as string) ?? "Registration failed";
       })
       .addCase(fetchProfile.fulfilled, (state, action) => {
-        state.user = action.payload;
+        state.user = toAuthUser(action.payload);
       });
   },
 });

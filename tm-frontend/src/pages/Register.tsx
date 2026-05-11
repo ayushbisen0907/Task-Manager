@@ -7,7 +7,6 @@ import {
   Alert,
   Box,
   Button,
-  Container,
   Link,
   Paper,
   Stack,
@@ -15,7 +14,10 @@ import {
   Typography,
 } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
-import { clearAuthError, register as registerThunk } from "../store/slices/auth.slice";
+import {
+  clearAuthError,
+  register as registerThunk,
+} from "../store/slices/auth.slice";
 
 const schema = z.object({
   name: z.string().min(2, "Name is too short"),
@@ -53,14 +55,52 @@ const RegisterPage = () => {
   };
 
   return (
-    <Container maxWidth="xs" sx={{ pt: 8 }}>
-      <Paper elevation={3} sx={{ p: 4 }}>
-        <Typography variant="h5" sx={{ mb: 1, fontWeight: 600 }}>
-          Create account
-        </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-          Sign up to start managing your tasks.
-        </Typography>
+    <Box
+      sx={{
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        p: 2,
+        background:
+          "radial-gradient(at 80% 0%, rgba(99,102,241,0.12) 0%, transparent 50%), radial-gradient(at 0% 100%, rgba(236,72,153,0.10) 0%, transparent 50%)",
+      }}
+    >
+      <Paper
+        elevation={3}
+        sx={{
+          p: { xs: 3, sm: 5 },
+          width: "100%",
+          maxWidth: 440,
+          borderRadius: 4,
+        }}
+      >
+        <Stack alignItems="center" sx={{ mb: 3 }}>
+          <Box
+            sx={{
+              width: 48,
+              height: 48,
+              borderRadius: 3,
+              background: "linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: "#fff",
+              fontWeight: 700,
+              fontSize: 22,
+              boxShadow: "0 8px 20px rgba(99,102,241,0.35)",
+              mb: 2,
+            }}
+          >
+            T
+          </Box>
+          <Typography variant="h5" sx={{ fontWeight: 700 }}>
+            Create your account
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+            Start managing tasks with your team
+          </Typography>
+        </Stack>
 
         {error && (
           <Alert severity="error" sx={{ mb: 2 }}>
@@ -69,7 +109,7 @@ const RegisterPage = () => {
         )}
 
         <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate>
-          <Stack spacing={2}>
+          <Stack spacing={2.5}>
             <TextField
               label="Full name"
               fullWidth
@@ -100,10 +140,11 @@ const RegisterPage = () => {
               variant="contained"
               size="large"
               disabled={status === "loading"}
+              sx={{ mt: 1 }}
             >
               {status === "loading" ? "Creating…" : "Create account"}
             </Button>
-            <Typography variant="body2" textAlign="center">
+            <Typography variant="body2" textAlign="center" color="text.secondary">
               Already have an account?{" "}
               <Link component={RouterLink} to="/login">
                 Sign in
@@ -112,7 +153,7 @@ const RegisterPage = () => {
           </Stack>
         </Box>
       </Paper>
-    </Container>
+    </Box>
   );
 };
 

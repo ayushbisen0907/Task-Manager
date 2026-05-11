@@ -2,7 +2,10 @@ import { useEffect, useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import {
   Alert,
+  Avatar,
   Box,
+  Card,
+  CardContent,
   Chip,
   CircularProgress,
   Pagination,
@@ -15,13 +18,19 @@ import {
   TableHead,
   TableRow,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
+import HistoryIcon from "@mui/icons-material/History";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { listActivityLogs } from "../store/slices/activityLogs.slice";
+import type { ActivityLog } from "../types";
 
 const PAGE_SIZE = 20;
 
-const actionColor = (action: string): "default" | "primary" | "warning" | "error" => {
+const actionColor = (
+  action: string,
+): "default" | "primary" | "warning" | "error" => {
   if (action.endsWith("_CREATED")) return "primary";
   if (action.endsWith("_UPDATED")) return "warning";
   if (action.endsWith("_DELETED")) return "error";
@@ -30,6 +39,8 @@ const actionColor = (action: string): "default" | "primary" | "warning" | "error
 
 const ActivityLogsPage = () => {
   const dispatch = useAppDispatch();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const { items, status, error, pagination } = useAppSelector(
     (s) => s.activityLogs,
   );
@@ -43,21 +54,12 @@ const ActivityLogsPage = () => {
 
   return (
     <Box>
-      <Stack
-        direction="row"
-        alignItems="center"
-        justifyContent="space-between"
-        sx={{ mb: 3 }}
-      >
-        <Box>
-          <Typography variant="h4" sx={{ fontWeight: 600 }}>
-            Activity log
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            A history of task creations, updates, and deletions.
-          </Typography>
-        </Box>
-      </Stack>
+      <Box sx={{ mb: 3 }}>
+        <Typography variant="h4">Activity log</Typography>
+        <Typography variant="body2" color="text.secondary">
+          A history of task creations, updates, and deletions.
+        </Typography>
+      </Box>
 
       {error && (
         <Alert severity="error" sx={{ mb: 2 }}>
@@ -65,33 +67,56 @@ const ActivityLogsPage = () => {
         </Alert>
       )}
 
-      <Paper elevation={1}>
-        {status === "loading" ? (
-          <Box sx={{ p: 6, textAlign: "center" }}>
-            <CircularProgress />
-          </Box>
-        ) : items.length === 0 ? (
-          <Box sx={{ p: 6, textAlign: "center" }}>
-            <Typography variant="body1" color="text.secondary">
-              No activity yet.
-            </Typography>
-          </Box>
-        ) : (
+      {status === "loading" ? (
+        <Paper sx={{ p: 8, textAlign: "center" }}>
+          <CircularProgress />
+        </Paper>
+      ) : items.length === 0 ? (
+        <Paper sx={{ p: 8, textAlign: "center" }}>
+          <Avatar
+            sx={{
+              bgcolor: "primary.50",
+              color: "primary.main",
+              mx: "auto",
+              mb: 2,
+              width: 56,
+              height: 56,
+            }}
+          >
+            <HistoryIcon />
+          </Avatar>
+          <Typography variant="h6" sx={{ fontWeight: 600 }}>
+            No activity yet
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Actions on tasks will appear here.
+          </Typography>
+        </Paper>
+      ) : isMobile ? (
+        <Stack spacing={1.5}>
+          {items.map((log) => (
+            <ActivityCard key={log.id} log={log} />
+          ))}
+        </Stack>
+      ) : (
+        <Paper>
           <TableContainer>
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell sx={{ fontWeight: 600 }}>When</TableCell>
-                  <TableCell sx={{ fontWeight: 600 }}>Action</TableCell>
-                  <TableCell sx={{ fontWeight: 600 }}>By</TableCell>
-                  <TableCell sx={{ fontWeight: 600 }}>Task</TableCell>
-                  <TableCell sx={{ fontWeight: 600 }}>Details</TableCell>
+                  <TableCell>When</TableCell>
+                  <TableCell>Action</TableCell>
+                  <TableCell>By</TableCell>
+                  <TableCell>Task</TableCell>
+                  <TableCell>Details</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {items.map((log) => (
                   <TableRow hover key={log.id}>
-                    <TableCell sx={{ whiteSpace: "nowrap" }}>
+                    <TableCell
+                      sx={{ whiteSpace: "nowrap", color: "text.secondary" }}
+                    >
                       {new Date(log.createdAt).toLocaleString()}
                     </TableCell>
                     <TableCell>
@@ -102,7 +127,27 @@ const ActivityLogsPage = () => {
                       />
                     </TableCell>
                     <TableCell>
-                      {log.user?.name ?? (
+                      {log.user ? (
+                        <Stack
+                          direction="row"
+                          spacing={1}
+                          alignItems="center"
+                        >
+                          <Avatar
+                            sx={{
+                              width: 24,
+                              height: 24,
+                              fontSize: 12,
+                              bgcolor: "primary.light",
+                            }}
+                          >
+                            {log.user.name.charAt(0).toUpperCase()}
+                          </Avatar>
+                          <Typography variant="body2">
+                            {log.user.name}
+                          </Typography>
+                        </Stack>
+                      ) : (
                         <Typography
                           variant="caption"
                           color="text.secondary"
@@ -116,7 +161,11 @@ const ActivityLogsPage = () => {
                       {log.taskId ? (
                         <RouterLink
                           to={`/tasks/${log.taskId}`}
-                          style={{ color: "inherit" }}
+                          style={{
+                            color: "inherit",
+                            fontFamily: "monospace",
+                            fontSize: 13,
+                          }}
                         >
                           {log.taskId.slice(0, 8)}…
                         </RouterLink>
@@ -132,8 +181,8 @@ const ActivityLogsPage = () => {
               </TableBody>
             </Table>
           </TableContainer>
-        )}
-      </Paper>
+        </Paper>
+      )}
 
       {pagination && totalPages > 1 && (
         <Stack alignItems="center" sx={{ mt: 3 }}>
@@ -142,12 +191,83 @@ const ActivityLogsPage = () => {
             page={page}
             onChange={(_, value) => setPage(value)}
             color="primary"
+            shape="rounded"
           />
         </Stack>
       )}
     </Box>
   );
 };
+
+const ActivityCard = ({ log }: { log: ActivityLog }) => (
+  <Card>
+    <CardContent>
+      <Stack
+        direction="row"
+        spacing={1}
+        alignItems="center"
+        justifyContent="space-between"
+        sx={{ mb: 1 }}
+      >
+        <Chip
+          label={log.action.replace(/_/g, " ")}
+          color={actionColor(log.action)}
+          size="small"
+        />
+        <Typography variant="caption" color="text.secondary">
+          {new Date(log.createdAt).toLocaleString()}
+        </Typography>
+      </Stack>
+      <DetailsCell details={log.details} />
+      <Stack
+        direction="row"
+        spacing={1}
+        alignItems="center"
+        sx={{ mt: 1.5 }}
+      >
+        {log.user ? (
+          <>
+            <Avatar
+              sx={{
+                width: 20,
+                height: 20,
+                fontSize: 10,
+                bgcolor: "primary.light",
+              }}
+            >
+              {log.user.name.charAt(0).toUpperCase()}
+            </Avatar>
+            <Typography variant="caption" color="text.secondary">
+              {log.user.name}
+            </Typography>
+          </>
+        ) : (
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            sx={{ fontFamily: "monospace" }}
+          >
+            {log.userId.slice(0, 8)}…
+          </Typography>
+        )}
+        {log.taskId && (
+          <Typography variant="caption" color="text.secondary">
+            ·{" "}
+            <RouterLink
+              to={`/tasks/${log.taskId}`}
+              style={{
+                color: "inherit",
+                fontFamily: "monospace",
+              }}
+            >
+              {log.taskId.slice(0, 8)}…
+            </RouterLink>
+          </Typography>
+        )}
+      </Stack>
+    </CardContent>
+  </Card>
+);
 
 const DetailsCell = ({
   details,

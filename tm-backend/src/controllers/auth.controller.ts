@@ -17,9 +17,9 @@ export const resgister = async (req: Request, res: Response) => {
 export const login = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
-    const result  = await loginUser(email, password);
-    res.status(200).json({ message: "User logged in successfully", result,  });
+    const result = await loginUser(email, password);
+    res.status(200).json({ message: "User logged in successfully", result });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
-}
+};

@@ -35,7 +35,7 @@ export const createTaskController = async (req: AuthRequest, res: Response) => {
         title: task.title,
       },
     });
-
+    // Send a response with a success message and the created task.
     res.status(201).json({
       message: "Task created successfully",
       task,

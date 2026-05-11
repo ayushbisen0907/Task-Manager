@@ -79,25 +79,28 @@ const CreateForm = () => {
   };
 
   return (
-    <Box>
+    <Box sx={{ maxWidth: 720, mx: "auto" }}>
       <Button
         startIcon={<ArrowBackIcon />}
         onClick={() => navigate("/tasks")}
         sx={{ mb: 2 }}
       >
-        Back
+        Back to tasks
       </Button>
-      <Paper elevation={1} sx={{ p: 4, maxWidth: 720 }}>
-        <Typography variant="h5" sx={{ fontWeight: 600, mb: 3 }}>
-          New task
-        </Typography>
+      <Typography variant="h4" sx={{ mb: 1 }}>
+        New task
+      </Typography>
+      <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+        Fill in the details below to create a new task.
+      </Typography>
+      <Paper sx={{ p: { xs: 3, md: 4 } }}>
         {error && (
           <Alert severity="error" sx={{ mb: 2 }}>
             {error}
           </Alert>
         )}
         <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate>
-          <Stack spacing={2}>
+          <Stack spacing={2.5}>
             <TextField
               label="Title"
               fullWidth
@@ -109,7 +112,7 @@ const CreateForm = () => {
               label="Description"
               fullWidth
               multiline
-              minRows={3}
+              minRows={4}
               error={!!errors.description}
               helperText={errors.description?.message}
               {...register("description")}
@@ -144,11 +147,17 @@ const CreateForm = () => {
                 />
               )}
             />
-            <Stack direction="row" spacing={2} justifyContent="flex-end">
+            <Stack
+              direction={{ xs: "column-reverse", sm: "row" }}
+              spacing={1.5}
+              justifyContent="flex-end"
+              sx={{ pt: 1 }}
+            >
               <Button onClick={() => navigate("/tasks")}>Cancel</Button>
               <Button
                 type="submit"
                 variant="contained"
+                size="large"
                 disabled={mutationStatus === "loading"}
               >
                 {mutationStatus === "loading" ? "Creating…" : "Create task"}
@@ -219,25 +228,28 @@ const EditForm = () => {
   }
 
   return (
-    <Box>
+    <Box sx={{ maxWidth: 720, mx: "auto" }}>
       <Button
         startIcon={<ArrowBackIcon />}
         onClick={() => navigate(`/tasks/${id}`)}
         sx={{ mb: 2 }}
       >
-        Back
+        Back to task
       </Button>
-      <Paper elevation={1} sx={{ p: 4, maxWidth: 720 }}>
-        <Typography variant="h5" sx={{ fontWeight: 600, mb: 3 }}>
-          Edit task
-        </Typography>
+      <Typography variant="h4" sx={{ mb: 1 }}>
+        Edit task
+      </Typography>
+      <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+        Update the task's information below.
+      </Typography>
+      <Paper sx={{ p: { xs: 3, md: 4 } }}>
         {error && (
           <Alert severity="error" sx={{ mb: 2 }}>
             {error}
           </Alert>
         )}
         <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate>
-          <Stack spacing={2}>
+          <Stack spacing={2.5}>
             <TextField
               label="Title"
               fullWidth
@@ -249,38 +261,46 @@ const EditForm = () => {
               label="Description"
               fullWidth
               multiline
-              minRows={3}
+              minRows={4}
               error={!!errors.description}
               helperText={errors.description?.message}
               {...register("description")}
             />
-            <Controller
-              name="status"
-              control={control}
-              render={({ field }) => (
-                <TextField select label="Status" fullWidth {...field}>
-                  <MenuItem value="pending">Pending</MenuItem>
-                  <MenuItem value="in_progress">In progress</MenuItem>
-                  <MenuItem value="completed">Completed</MenuItem>
-                </TextField>
-              )}
-            />
-            <Controller
-              name="priority"
-              control={control}
-              render={({ field }) => (
-                <TextField select label="Priority" fullWidth {...field}>
-                  <MenuItem value="low">Low</MenuItem>
-                  <MenuItem value="medium">Medium</MenuItem>
-                  <MenuItem value="high">High</MenuItem>
-                </TextField>
-              )}
-            />
-            <Stack direction="row" spacing={2} justifyContent="flex-end">
+            <Stack direction={{ xs: "column", sm: "row" }} spacing={2.5}>
+              <Controller
+                name="status"
+                control={control}
+                render={({ field }) => (
+                  <TextField select label="Status" fullWidth {...field}>
+                    <MenuItem value="pending">Pending</MenuItem>
+                    <MenuItem value="in_progress">In progress</MenuItem>
+                    <MenuItem value="completed">Completed</MenuItem>
+                  </TextField>
+                )}
+              />
+              <Controller
+                name="priority"
+                control={control}
+                render={({ field }) => (
+                  <TextField select label="Priority" fullWidth {...field}>
+                    <MenuItem value="low">Low</MenuItem>
+                    <MenuItem value="medium">Medium</MenuItem>
+                    <MenuItem value="high">High</MenuItem>
+                  </TextField>
+                )}
+              />
+            </Stack>
+            <Stack
+              direction={{ xs: "column-reverse", sm: "row" }}
+              spacing={1.5}
+              justifyContent="flex-end"
+              sx={{ pt: 1 }}
+            >
               <Button onClick={() => navigate(`/tasks/${id}`)}>Cancel</Button>
               <Button
                 type="submit"
                 variant="contained"
+                size="large"
                 disabled={mutationStatus === "loading"}
               >
                 {mutationStatus === "loading" ? "Saving…" : "Save changes"}
